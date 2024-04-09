@@ -27,6 +27,7 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
+      ## Setup
       - name: Checkout
         uses: actions/checkout@v4
       - name: Set up Node
@@ -36,10 +37,16 @@ jobs:
           cache: 'npm'
       - name: Install dependencies
         run: npm install
+
+      ## Lint
       - name: Run linters
         run: npm run lint
+
+      ## Unit tests
       - name: Run unit tests
         run: npm run test:unit
+
+      ## Build the source code
       - name: Build
         run: npm run build
       - name: Create 404 page
@@ -49,6 +56,8 @@ jobs:
         with:
           # Upload dist repository
           path: './dist'
+
+      ## E2E test out built application
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
       - name: Run E2E tests
@@ -58,7 +67,9 @@ jobs:
         with:
           name: playwright-report
           path: playwright-report/
-          retention-days: 30
+          retention-days: 7
+
+      ## Deploy
       - name: Setup Pages
         uses: actions/configure-pages@v4
       - name: Deploy to GitHub Pages
